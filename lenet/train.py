@@ -13,8 +13,8 @@ from torch.utils.data import (
 import torchvision.transforms as transforms  # Transformations we can perform on our dataset for augmentation
 
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = "cpu"
 # Hyperparameters
 in_channels = 1
 num_classes = 10
@@ -64,6 +64,11 @@ for epoch in range(num_epochs):
     print(f"Cost at epoch {epoch} is {sum(losses)/len(losses):.5f}")
 
 def check_accuracy(loader, model):
+    if loader.dataset.train:
+        print("Checking accuracy on training data")
+    else:
+        print("Checking accuracy on test data")
+
     num_correct = 0
     num_samples = 0
     model.eval()
@@ -78,7 +83,14 @@ def check_accuracy(loader, model):
             num_correct += (predictions == y).sum()
             num_samples += predictions.size(0)
 
+        print(
+            f"Got {num_correct} / {num_samples} with accuracy {float(num_correct)/float(num_samples)*100:.2f}"
+        )
+
     model.train()
-    print(f"Accuracy on training set: {check_accuracy(train_loader, model)*100:.2f}")
-    print(f"Accuracy on test set: {check_accuracy(test_loader, model)*100:.2f}")
-check_accuracy(test_loader,model)
+
+
+check_accuracy(train_loader, model)
+check_accuracy(test_loader, model)
+
+
